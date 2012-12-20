@@ -1,0 +1,44 @@
+
+# help
+HELP="
+usage: gitlink [-h] [--help]\n\nSimple script to link github pull requests to issues on git hub.  We assume that the branch name is of the format xxx-branch-name where xxx is the issue number that the branch relates to.
+"
+if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]];then echo -e $HELP;exit 0;fi
+
+# get our current branch
+BRANCH=`git status | grep "On branch" | cut -f4 -d\ `
+ISSUE=`echo $BRANCH | cut -f1 -d-`
+
+#FIXME check $ISSUE is a number
+
+# get our username and remote origin
+USER=`git config -l | grep "user\.name" | cut -f2 -d=`
+REMOTE_URL=`git config -l | grep "remote\.origin\.url" | cut -f2 -d=`
+
+REMOTE_DOMAIN=`echo $REMOTE_URL | cut -f1 -d:`
+REMOTE_REPO=`echo $REMOTE_URL | cut -f2 -d: | cut -f1 -d.`
+
+# sanity check
+if [[ $REMOTE_DOMAIN != "git@github.com" ]]
+then echo Remote domain \`$REMOTE_DOMAIN\` not recognised; exit 1
+fi
+
+# create the command
+cmd="curl -s --user $USER --request POST --data '{\"issue\": \"$ISSUE\", \"head\": \"$BRANCH\", \"base\": \"master\"}' https://api.github.com/repos/$REMOTE_REPO/pulls"
+
+# check with user
+echo Github repo: $REMOTE_REPO
+echo User: $USER
+echo -n Link branch $BRANCH to issue \#$ISSUE [Y/n]?
+read result
+if [[ $result != "y" ]] && [[ $result != "Y" ]] && [[ $result != "" ]];then exit 0;fi
+
+# run the command
+x=`eval $cmd`
+
+# extract error
+message=`echo $x | grep \"message\" | sed 's/^.*"message": "//;s/".*$//'`
+if [[ "$message" ]]
+then echo Github Error: $message
+    exit 2
+fi
