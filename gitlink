@@ -42,3 +42,5 @@ if [[ "$message" ]]
 then echo Github Error: $message
     exit 2
 fi
+
+echo Pull request should now be linked to the issue
