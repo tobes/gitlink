@@ -13,7 +13,7 @@ ISSUE=`echo $BRANCH | cut -f1 -d-`
 #FIXME check $ISSUE is a number
 
 # get our username and remote origin
-USER=`git config -l | grep "user\.name" | cut -f2 -d=`
+USER=`git config -l | grep "github\.user" | cut -f2 -d=`
 REMOTE_URL=`git config -l | grep "remote\.origin\.url" | cut -f2 -d=`
 
 REMOTE_DOMAIN=`echo $REMOTE_URL | cut -f1 -d:`
