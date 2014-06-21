@@ -7,7 +7,7 @@ usage: gitlink [-h] [--help]\n\nSimple script to link github pull requests to is
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]];then echo -e $HELP;exit 0;fi
 
 # get our current branch
-BRANCH=`git status | grep "On branch" | cut -f4 -d\ `
+BRANCH=`git rev-parse --abbrev-ref HEAD`
 ISSUE=`echo $BRANCH | cut -f1 -d-`
 
 #FIXME check $ISSUE is a number
